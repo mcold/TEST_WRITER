@@ -1,14 +1,24 @@
 ; тестовый пример записи словарей в массив
+SendMode Input
+KeysCount := 0
+Rec := 1 ; флаг записи
 
 
+global Macro2 := {}					; словарь для сохранения последовательности текста
 global Array := Object()
 
 
 ^LButton::
+InsertSymbols()
+
 MouseGetPos, xpos, ypos, id, control
 ;text = left`t%xpos%`t%ypos%
-Dict := {type : "button",  dest : "left", x : xpos, y : ypos}
+Dict := {type : "button",  dest : "left", x : xpos, y : ypos, id : id, control : control}
 Array.Insert(Dict)
+
+
+
+KeysCount := 0 ; количество клавиш (команд) в макросе
 return
 
 ^RButton::
@@ -20,11 +30,16 @@ return
 F4::
 for i in Array
 {
+	Sleep, 250
 	if % Array[i].type = "button"
 	{
 		MouseClick, % Array[i].dest, % Array[i].x, % Array[i].y	
 	}
-	Sleep, 500
+	
+	if % Array[i].type = "text"
+	{
+		Send % Array[i].text
+	}
 }
 return
 
@@ -36,14 +51,57 @@ Add(Key) ; запоминание нажатой клавиши
     If Rec = 1
     {
         KeysCount += 1
-        Macro%KeysCount% := Key
+        Macro2.Insert(KeysCount, Key)
     }
 }
 
+InsertSymbols()
+{
+n = 0				; по переменной определяем наличие текста	
+global KeysCount
+symbols := 
+Loop %KeysCount%
+{
+	n += 1
+	; собираем в 1 строку some
+	element := Macro2[A_Index]
+	symbols .= element
+	
+	;Dict := {type : "text",  text : symbols}			; формируем словарь	
+}
+
+
+if(n > 0)                                              ; именно n, а не %n%
+	{
+		Dict := {type : "text",  text : symbols}			; формируем словарь
+	
+		Array.Insert(Dict)	
+		var := Macro2.MaxIndex()
+		Loop, %var% 
+		{
+			;k := A_Index	
+			Macro2.Remove(1)
+		}
+		KeysCount := 0
+		symbols := 
+	}
+}
+
+
+
 
 F5:: Reload
-F9:: Pause, On
-F10:: Pause, Off
+F9:: 
+Pause, On
+Rec := 0 ; флаг записи
+return
+
+F10:: 
+Pause, Off
+Rec := 1 ; флаг записи
+return
+
+F11:: ExitApp
 
 
 
