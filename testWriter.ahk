@@ -28,7 +28,6 @@ global Array := Object()
 	Array.Insert(Dict)
 
 
-
 	KeysCount := 0 ; количество клавиш (команд) в макросе
 	return
 
@@ -45,7 +44,7 @@ global Array := Object()
 	Array.Insert(Dict)
 return
 
-F4::
+F8::
 for i in Array
 {
 	; Sleep, 250
@@ -115,7 +114,30 @@ TimeRewrite()
 	t_Time := A_Now
 }
 
-
+F2::
+; сохранение скрипта
+FileSelectFile, SelectedFile, 8, ,Открыть файл, Текстовые файлы (*.ahk) 					; выбор файла с созданием
+for i in Array
+{
+	if % Array[i].type = "button"
+	{
+		d := % Array[i].delta
+		dest := % Array[i].dest
+		xx := % Array[i].x
+		yy := % Array[i].y
+		FileAppend, Sleep`,%d%`n, %SelectedFile%`.ahk
+		FileAppend, MouseClick`,%dest%`,%xx%`,%yy%`n, %SelectedFile%`.ahk
+		 	
+		;MouseClick, % Array[i].dest, % Array[i].x, % Array[i].y
+	}
+	
+	if % Array[i].type = "text"
+	{
+		t := % Array[i].text
+		FileAppend, Send %t%`n, %SelectedFile%`.ahk
+	}
+}
+return
 
 
 
