@@ -1,7 +1,14 @@
+; сохранения разницы времени A_Now в глобальной переменной
+; сохранения скрипта файлом
+
+
+
 ; тестовый пример записи словарей в массив
 SendMode Input
 KeysCount := 0
 Rec := 1 ; флаг записи
+t_prev := A_Now						; предыдущее время
+t_Time := A_Now						; текущее время
 
 
 global Macro2 := {}					; словарь для сохранения последовательности текста
@@ -9,30 +16,42 @@ global Array := Object()
 
 
 ^LButton::
-InsertSymbols()
+	InsertSymbols()
 
-MouseGetPos, xpos, ypos, id, control
-;text = left`t%xpos%`t%ypos%
-Dict := {type : "button",  dest : "left", x : xpos, y : ypos, id : id, control : control}
-Array.Insert(Dict)
+	; получаем разницу во времени выполнения
+	TimeRewrite()
+	delta := (t_Time - t_prev) * 1000
+	
+	; формируем запись действия пользователя
+	MouseGetPos, xpos, ypos, id, control
+	Dict := {type : "button",  dest : "left", x : xpos, y : ypos, id : id, control : control, delta : delta}
+	Array.Insert(Dict)
 
 
 
-KeysCount := 0 ; количество клавиш (команд) в макросе
-return
+	KeysCount := 0 ; количество клавиш (команд) в макросе
+	return
 
 ^RButton::
-MouseGetPos, xpos, ypos, id, control
-Dict := {type : "button",  dest : "right", x : xpos, y : ypos}
-Array.Insert(Dict)
+	InsertSymbols()
+
+	; получаем разницу во времени выполнения
+	TimeRewrite()
+	delta := (t_Time - t_prev) * 1000
+	
+	; формируем запись действия пользователя
+	MouseGetPos, xpos, ypos, id, control
+	Dict := {type : "button",  dest : "right", x : xpos, y : ypos, id : id, control : control, delta : delta}
+	Array.Insert(Dict)
 return
 
 F4::
 for i in Array
 {
-	Sleep, 250
+	; Sleep, 250
 	if % Array[i].type = "button"
 	{
+		Sleep, % Array[i].delta
 		MouseClick, % Array[i].dest, % Array[i].x, % Array[i].y	
 	}
 	
@@ -52,40 +71,50 @@ Add(Key) ; запоминание нажатой клавиши
     {
         KeysCount += 1
         Macro2.Insert(KeysCount, Key)
+		TimeRewrite()					; переписываем время
     }
 }
 
-InsertSymbols()
+InsertSymbols()				; функция записывает текст в массив
 {
-n = 0				; по переменной определяем наличие текста	
-global KeysCount
-symbols := 
-Loop %KeysCount%
-{
-	n += 1
-	; собираем в 1 строку some
-	element := Macro2[A_Index]
-	symbols .= element
-	
-	;Dict := {type : "text",  text : symbols}			; формируем словарь	
-}
-
-
-if(n > 0)                                              ; именно n, а не %n%
+	n = 0					; по переменной определяем наличие текста	
+	global KeysCount
+	symbols := 
+	Loop %KeysCount%
 	{
-		Dict := {type : "text",  text : symbols}			; формируем словарь
-	
-		Array.Insert(Dict)	
-		var := Macro2.MaxIndex()
-		Loop, %var% 
-		{
-			;k := A_Index	
-			Macro2.Remove(1)
-		}
-		KeysCount := 0
-		symbols := 
+		n += 1
+		; собираем в 1 строку some
+		element := Macro2[A_Index]
+		symbols .= element
+		
+		;Dict := {type : "text",  text : symbols}			; формируем словарь	
 	}
+
+
+	if(n > 0)                                              ; именно n, а не %n%
+		{
+			Dict := {type : "text",  text : symbols}			; формируем словарь
+		
+			Array.Insert(Dict)	
+			var := Macro2.MaxIndex()
+			Loop, %var% 
+			{
+				;k := A_Index	
+				Macro2.Remove(1)
+			}
+			KeysCount := 0
+			symbols := 
+		}
 }
+
+TimeRewrite()
+; переписываем время
+{
+	global 
+	t_prev := t_Time
+	t_Time := A_Now
+}
+
 
 
 
@@ -99,6 +128,7 @@ return
 F10:: 
 Pause, Off
 Rec := 1 ; флаг записи
+global t_Time := A_Now
 return
 
 F11:: ExitApp
