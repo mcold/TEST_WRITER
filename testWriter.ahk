@@ -1,46 +1,48 @@
-; СЃРѕС…СЂР°РЅРµРЅРёСЏ СЂР°Р·РЅРёС†С‹ РІСЂРµРјРµРЅРё A_Now РІ РіР»РѕР±Р°Р»СЊРЅРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№
-; СЃРѕС…СЂР°РЅРµРЅРёСЏ СЃРєСЂРёРїС‚Р° С„Р°Р№Р»РѕРј
+; сохранения разницы времени A_Now в глобальной переменной
+; сохранения скрипта файлом
 
- 
 
-; С‚РµСЃС‚РѕРІС‹Р№ РїСЂРёРјРµСЂ Р·Р°РїРёСЃРё СЃР»РѕРІР°СЂРµР№ РІ РјР°СЃСЃРёРІ
+
+; тестовый пример записи словарей в массив
 SendMode Input
 KeysCount := 0
-Rec := 1 ; С„Р»Р°Рі Р·Р°РїРёСЃРё
-t_prev := A_Now						; РїСЂРµРґС‹РґСѓС‰РµРµ РІСЂРµРјСЏ
-t_Time := A_Now						; С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ
+Rec := 1 ; флаг записи
+t_prev := A_Now						; предыдущее время
+t_Time := A_Now						; текущее время
 
 
-global Macro2 := {}					; СЃР»РѕРІР°СЂСЊ РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё С‚РµРєСЃС‚Р°
+global Macro2 := {}					; словарь для сохранения последовательности текста
 global Array := Object()
 
 
 ^LButton::
 	InsertSymbols()
 
-	; РїРѕР»СѓС‡Р°РµРј СЂР°Р·РЅРёС†Сѓ РІРѕ РІСЂРµРјРµРЅРё РІС‹РїРѕР»РЅРµРЅРёСЏ
+	; получаем разницу во времени выполнения
 	TimeRewrite()
 	delta := (t_Time - t_prev) * 1000
 	
-	; С„РѕСЂРјРёСЂСѓРµРј Р·Р°РїРёСЃСЊ РґРµР№СЃС‚РІРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+	; формируем запись действия пользователя
 	MouseGetPos, xpos, ypos, id, control
-	Dict := {type : "button",  dest : "left", x : xpos, y : ypos, id : id, control : control, delta : delta}
+	WinGetActiveTitle, title
+	Dict := {type : "button",  dest : "left", x : xpos, y : ypos, id : id, control : control, delta : delta, title : title}
 	Array.Insert(Dict)
 
 
-	KeysCount := 0 ; РєРѕР»РёС‡РµСЃС‚РІРѕ РєР»Р°РІРёС€ (РєРѕРјР°РЅРґ) РІ РјР°РєСЂРѕСЃРµ
+	KeysCount := 0 ; количество клавиш (команд) в макросе
 	return
 
 ^RButton::
 	InsertSymbols()
 
-	; РїРѕР»СѓС‡Р°РµРј СЂР°Р·РЅРёС†Сѓ РІРѕ РІСЂРµРјРµРЅРё РІС‹РїРѕР»РЅРµРЅРёСЏ
+	; получаем разницу во времени выполнения
 	TimeRewrite()
 	delta := (t_Time - t_prev) * 1000
 	
-	; С„РѕСЂРјРёСЂСѓРµРј Р·Р°РїРёСЃСЊ РґРµР№СЃС‚РІРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+	; формируем запись действия пользователя
 	MouseGetPos, xpos, ypos, id, control
-	Dict := {type : "button",  dest : "right", x : xpos, y : ypos, id : id, control : control, delta : delta}
+	WinGetActiveTitle, title
+	Dict := {type : "button",  dest : "right", x : xpos, y : ypos, id : id, control : control, delta : delta, title : title}
 	Array.Insert(Dict)
 return
 
@@ -63,36 +65,36 @@ return
 
 
 
-Add(Key) ; Р·Р°РїРѕРјРёРЅР°РЅРёРµ РЅР°Р¶Р°С‚РѕР№ РєР»Р°РІРёС€Рё
+Add(Key) ; запоминание нажатой клавиши
 {
     global
     If Rec = 1
     {
         KeysCount += 1
         Macro2.Insert(KeysCount, Key)
-		TimeRewrite()					; РїРµСЂРµРїРёСЃС‹РІР°РµРј РІСЂРµРјСЏ
+		TimeRewrite()					; переписываем время
     }
 }
 
-InsertSymbols()				; С„СѓРЅРєС†РёСЏ Р·Р°РїРёСЃС‹РІР°РµС‚ С‚РµРєСЃС‚ РІ РјР°СЃСЃРёРІ
+InsertSymbols()				; функция записывает текст в массив
 {
-	n = 0					; РїРѕ РїРµСЂРµРјРµРЅРЅРѕР№ РѕРїСЂРµРґРµР»СЏРµРј РЅР°Р»РёС‡РёРµ С‚РµРєСЃС‚Р°	
+	n = 0					; по переменной определяем наличие текста	
 	global KeysCount
 	symbols := 
 	Loop %KeysCount%
 	{
 		n += 1
-		; СЃРѕР±РёСЂР°РµРј РІ 1 СЃС‚СЂРѕРєСѓ some
+		; собираем в 1 строку some
 		element := Macro2[A_Index]
 		symbols .= element
 		
-		;Dict := {type : "text",  text : symbols}			; С„РѕСЂРјРёСЂСѓРµРј СЃР»РѕРІР°СЂСЊ	
+		;Dict := {type : "text",  text : symbols}			; формируем словарь	
 	}
 
 
-	if(n > 0)                                              ; РёРјРµРЅРЅРѕ n, Р° РЅРµ %n%
+	if(n > 0)                                              ; именно n, а не %n%
 		{
-			Dict := {type : "text",  text : symbols}			; С„РѕСЂРјРёСЂСѓРµРј СЃР»РѕРІР°СЂСЊ
+			Dict := {type : "text",  text : symbols}			; формируем словарь
 		
 			Array.Insert(Dict)	
 			var := Macro2.MaxIndex()
@@ -107,7 +109,7 @@ InsertSymbols()				; С„СѓРЅРєС†РёСЏ Р·Р°РїРёСЃС‹РІР°РµС‚ С‚РµРєСЃС‚ РІ РјР°СЃСЃР
 }
 
 TimeRewrite()
-; РїРµСЂРµРїРёСЃС‹РІР°РµРј РІСЂРµРјСЏ
+; переписываем время
 {
 	global 
 	t_prev := t_Time
@@ -115,8 +117,8 @@ TimeRewrite()
 }
 
 F2::
-; СЃРѕС…СЂР°РЅРµРЅРёРµ СЃРєСЂРёРїС‚Р°
-FileSelectFile, SelectedFile, 8, ,РћС‚РєСЂС‹С‚СЊ С„Р°Р№Р», РўРµРєСЃС‚РѕРІС‹Рµ С„Р°Р№Р»С‹ (*.ahk) 					; РІС‹Р±РѕСЂ С„Р°Р№Р»Р° СЃ СЃРѕР·РґР°РЅРёРµРј
+; сохранение скрипта
+FileSelectFile, SelectedFile, 8, ,Открыть файл, Текстовые файлы (*.ahk) 					; выбор файла с созданием
 for i in Array
 {
 	if % Array[i].type = "button"
@@ -125,10 +127,19 @@ for i in Array
 		dest := % Array[i].dest
 		xx := % Array[i].x
 		yy := % Array[i].y
+		tt := % Array[i].title
+		
+		; запись активации окна
+		FileAppend, IfWinExist`, %tt%`n, %SelectedFile%`.ahk
+		FileAppend, WinActivate`n, %SelectedFile%`.ahk
+		FileAppend, else`n, %SelectedFile%`.ahk
+		FileAppend, WinActivate`, %tt%`n, %SelectedFile%`.ahk
+		;FileAppend, return`n, %SelectedFile%`.ahk
+		
+		; запись действий
 		FileAppend, Sleep`,%d%`n, %SelectedFile%`.ahk
 		FileAppend, MouseClick`,%dest%`,%xx%`,%yy%`n, %SelectedFile%`.ahk
 		 	
-		;MouseClick, % Array[i].dest, % Array[i].x, % Array[i].y
 	}
 	
 	if % Array[i].type = "text"
@@ -139,17 +150,21 @@ for i in Array
 }
 return
 
-
+IfWinExist, %tt%
+    WinActivate ; Используется окно, найденное выше
+else
+    WinActivate, %tt%
+return
 
 F5:: Reload
 F9:: 
 Pause, On
-Rec := 0 ; С„Р»Р°Рі Р·Р°РїРёСЃРё
+Rec := 0 ; флаг записи
 return
 
 F10:: 
 Pause, Off
-Rec := 1 ; С„Р»Р°Рі Р·Р°РїРёСЃРё
+Rec := 1 ; флаг записи
 global t_Time := A_Now
 return
 
@@ -159,7 +174,7 @@ F11:: ExitApp
 
 
 ;==========================================================
-; РїРµСЂРµС…РѕРґС‹ РїРѕ С‚РµРєСЃС‚Сѓ
+; переходы по тексту
 ~Home:: Add("{Home}")
 ~End:: Add("{End}")
 
@@ -171,14 +186,14 @@ F11:: ExitApp
 ~^Left:: Add("^{Left}")
 ~^Right:: Add("^{Right}")
 
-; Р·Р°Р±РѕР№, СѓРґР°Р»РµРЅРёРµ, РїСЂРѕР±РµР»С‹ Рё С‚.Рї.
+; забой, удаление, пробелы и т.п.
 ~BackSpace:: Add("{BackSpace}")
 ~Delete:: Add("{Delete}")
 ~Tab:: Add("{Tab}")
 ~Space:: Add("{Space}")
 ~Enter:: Add("{Enter}")
 
-; СЂР°Р±РѕС‚Р° СЃ Р±СѓС„РµСЂРѕРј
+; работа с буфером
 ~^sc02D:: Add("^{sc02D}") ; Control + X
 ~^sc02E:: Add("^{sc02E}") ; Control + C
 ~^sc02F:: Add("^{sc02F}") ; Control + V
@@ -187,7 +202,7 @@ F11:: ExitApp
 ~+Insert:: Add("+{Insert}")
 ~+Delete:: Add("+{Delete}")
 
-; РІС‹РґРµР»РµРЅРёРµ С‚РµРєСЃС‚Р°
+; выделение текста
 ~+Left:: Add("+{Left}")
 ~+Right:: Add("+{Right}")
 ~^+Left:: Add("^+{Left}")
@@ -195,7 +210,7 @@ F11:: ExitApp
 ~+Home:: Add("+{Home}")
 ~+End:: Add("+{End}")
 
-; С†РёС„СЂС‹
+; цифры
 ~sc029:: Add("{sc029}") ; `
 ~+sc029:: Add("+{sc029}")
 ~sc002:: Add("{sc002}") ; 1
@@ -225,7 +240,7 @@ F11:: ExitApp
 ~sc02B:: Add("{sc02B}") ; \
 ~+sc02B:: Add("+{sc02B}")
 
-; Р±СѓРєРІС‹
+; буквы
 ~sc010:: Add("{sc010}") ; Q
 ~+sc010:: Add("+{sc010}")
 ~sc011:: Add("{sc011}") ; W
