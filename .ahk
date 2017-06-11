@@ -231,3 +231,70 @@ else
 WinActivate, time Ч Ѕлокнот
 Sleep,1000
 MouseClick,left,212,38
+Send {Delete}
+IfWinExist, time Ч Ѕлокнот
+WinActivate
+else
+WinActivate, time Ч Ѕлокнот
+Sleep,1000
+MouseClick,left,107,111
+Send {sc020}{sc016}{sc032}{sc032}{sc015}
+IfWinExist, time Ч Ѕлокнот
+WinActivate
+else
+WinActivate, time Ч Ѕлокнот
+Sleep,1000
+MouseClick,left,160,98
+MsgBox, Comments, text
+IfWinExist, time Ч Ѕлокнот
+WinActivate
+else
+WinActivate, time Ч Ѕлокнот
+Sleep,5000
+MouseClick,left,225,44
+IfWinExist, time Ч Ѕлокнот
+WinActivate
+else
+WinActivate, time Ч Ѕлокнот
+Sleep,2000
+MouseClick,left,276,92
+IfWinExist, Ѕлокнот: сведени€
+WinActivate
+else
+WinActivate, Ѕлокнот: сведени€
+Sleep,2000
+MouseClick,left,525,388
+MsgBox, Comments, control
+IfWinExist, time Ч Ѕлокнот
+WinActivate
+else
+WinActivate, time Ч Ѕлокнот
+Sleep,7000
+MouseClick,left,191,159
+Send {Enter}{sc024}{sc017}{sc032}{sc032}{BackSpace}{BackSpace}{BackSpace}{BackSpace}{sc023}{sc016}{sc031}{sc031}{sc015}{Enter}
+IfWinExist, time Ч Ѕлокнот
+WinActivate
+else
+WinActivate, time Ч Ѕлокнот
+Sleep,1000
+MouseClick,left,164,139
+IfWinExist, time Ч Ѕлокнот
+WinActivate
+else
+WinActivate, time Ч Ѕлокнот
+Sleep,2000
+MouseClick,left,24,40
+IfWinExist, time Ч Ѕлокнот
+WinActivate
+else
+WinActivate, time Ч Ѕлокнот
+Sleep,2000
+MouseClick,left,82,125
+Send {sc01F}{sc016}{sc031}{sc031}{sc015}
+IfWinExist, —охранение
+WinActivate
+else
+WinActivate, —охранение
+Sleep,2000
+MouseClick,left,502,440
+MsgBox, Comments, save
