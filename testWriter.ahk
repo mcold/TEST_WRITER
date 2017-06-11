@@ -60,6 +60,10 @@ for i in Array
 	{
 		Send % Array[i].text
 	}
+	if % Array[i].type = "input"
+	{
+		MsgBox, Comments, %t%
+	}
 }
 return
 
@@ -147,6 +151,11 @@ for i in Array
 		t := % Array[i].text
 		FileAppend, Send %t%`n, %SelectedFile%`.ahk
 	}
+	if % Array[i].type = "input"
+	{
+		t := % Array[i].text
+		FileAppend, MsgBox`, Comments`, %t%`n, %SelectedFile%`.ahk
+	}
 }
 return
 
@@ -170,7 +179,13 @@ return
 
 F11:: ExitApp
 
-
+F12::
+global Rec := 0
+InputBox, inputtext, Comments
+Dict := {type : "input",  text : inputtext}
+Array.Insert(Dict)
+Rec := 1
+return
 
 
 ;==========================================================
