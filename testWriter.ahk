@@ -1,45 +1,44 @@
-; сохранения разницы времени A_Now в глобальной переменной
-; сохранения скрипта файлом
+; TODO:
+; comments
+; adding new movements  - time ruling is problem
+; rewrite comments on english
 
-
-
-; тестовый пример записи словарей в массив
 SendMode Input
 KeysCount := 0
-Rec := 1 ; флаг записи
-t_prev := A_Now						; предыдущее время
-t_Time := A_Now						; текущее время
+Rec := 1 						; flag of writing
+t_prev := A_Now						; previous time 
+t_Time := A_Now						; current time
 
+; excgange language
+SendMessage, 0x50,, 0x4090409,, A 			; english
+b_eng := 1
 
-global Macro2 := {}					; словарь для сохранения последовательности текста
+; global Macro2 := {}					; dictionary for writing text
 global Array := Object()
 
 
 ^LButton::
-	InsertSymbols()
+	;InsertSymbols()
 
-	; получаем разницу во времени выполнения
+	; take difference of time in execution 
 	TimeRewrite()
 	delta := (t_Time - t_prev) * 1000
 	
-	; формируем запись действия пользователя
+	; make record of button and add to Array 
 	MouseGetPos, xpos, ypos, id, control
 	WinGetActiveTitle, title
 	Dict := {type : "button",  dest : "left", x : xpos, y : ypos, id : id, control : control, delta : delta, title : title}
 	Array.Insert(Dict)
 
 
-	KeysCount := 0 ; количество клавиш (команд) в макросе
+	KeysCount := 0 ; number of buttons 
 	return
 
 ^RButton::
-	InsertSymbols()
 
-	; получаем разницу во времени выполнения
 	TimeRewrite()
 	delta := (t_Time - t_prev) * 1000
 	
-	; формируем запись действия пользователя
 	MouseGetPos, xpos, ypos, id, control
 	WinGetActiveTitle, title
 	Dict := {type : "button",  dest : "right", x : xpos, y : ypos, id : id, control : control, delta : delta, title : title}
@@ -67,38 +66,61 @@ for i in Array
 }
 return
 
+ChangeLang()
+{
+	global b_eng
+	if b_eng = 1
+	{
+		SendMessage, 0x50,, 0x4190419,, A ; russian 
+		b_eng := 0
+			
+		Dict := {type : "lang",  to_lang : "ru"}			; make dictionary 
+		Array.Insert(Dict)
+		return
+	}
+	if b_eng = 0
+	{
+		SendMessage, 0x50,, 0x4090409,, A ; english 
+		b_eng := 1
+
+		Dict := {type : "lang",  to_lang : "eng"}			; make dictionary 
+		Array.Insert(Dict)
+		return
+	}
+}
 
 
-Add(Key) ; запоминание нажатой клавиши
+Add(Key) ; remember clicked button 
 {
     global
     If Rec = 1
     {
         KeysCount += 1
-        Macro2.Insert(KeysCount, Key)
-		TimeRewrite()					; переписываем время
-    }
+        ;Macro2.Insert(KeysCount, Key)
+		TimeRewrite()	
+		Dict := {type : "text",  text : Key}
+		Array.Insert(Dict)	
+	}
 }
 
-InsertSymbols()				; функция записывает текст в массив
+InsertSymbols()				
 {
-	n = 0					; по переменной определяем наличие текста	
+	n = 0					
 	global KeysCount
 	symbols := 
 	Loop %KeysCount%
 	{
 		n += 1
-		; собираем в 1 строку some
+		; summon to 1 record 
 		element := Macro2[A_Index]
 		symbols .= element
 		
-		;Dict := {type : "text",  text : symbols}			; формируем словарь	
 	}
 
 
-	if(n > 0)                                              ; именно n, а не %n%
+	if(n > 0)                                              ; namely n, not %n%
 		{
-			Dict := {type : "text",  text : symbols}			; формируем словарь
+			Dict := {type : "text",  text : symbols}			
 		
 			Array.Insert(Dict)	
 			var := Macro2.MaxIndex()
@@ -121,8 +143,11 @@ TimeRewrite()
 }
 
 F2::
-; сохранение скрипта
-FileSelectFile, SelectedFile, 8, ,Открыть файл, Текстовые файлы (*.ahk) 					; выбор файла с созданием
+global Rec = 0 							; not write name of file to script
+; save script 
+FileSelectFile, SelectedFile, 8, ,Open file, Texture files(*.ahk) 					; choose file for create or exchange 
+FileAppend, SendMessage`, 0x50`,`, 0x4090409`,`, A`n, %SelectedFile%`.ahk 				; overtune to english by default 
+
 for i in Array
 {
 	if % Array[i].type = "button"
@@ -156,24 +181,35 @@ for i in Array
 		t := % Array[i].text
 		FileAppend, MsgBox`, Comments`, %t%`n, %SelectedFile%`.ahk
 	}
+	if % Array[i].type = "lang"
+	{
+		if % Array[i].to_lang = "eng"
+		{
+			
+		FileAppend, SendMessage`, 0x50`,`, 0x4090409`,`, A`n, %SelectedFile%`.ahk ; english 
+		}
+
+		if % Array[i].to_lang = "ru"
+		{
+			
+		FileAppend, SendMessage`, 0x50`,`, 0x4190419`,`, A`n, %SelectedFile%`.ahk ; russian 
+		}
+	}
+
 }
+global Rec = 1
 return
 
-IfWinExist, %tt%
-    WinActivate ; Используется окно, найденное выше
-else
-    WinActivate, %tt%
-return
 
 F5:: Reload
 F9:: 
 Pause, On
-Rec := 0 ; флаг записи
+Rec := 0 ; flag for writing 
 return
 
 F10:: 
 Pause, Off
-Rec := 1 ; флаг записи
+Rec := 1 
 global t_Time := A_Now
 return
 
@@ -187,9 +223,12 @@ Array.Insert(Dict)
 Rec := 1
 return
 
+; exchange language 
+~!+sc02C::ChangeLang()
+
 
 ;==========================================================
-; переходы по тексту
+; exchanges on text 
 ~Home:: Add("{Home}")
 ~End:: Add("{End}")
 
@@ -201,14 +240,12 @@ return
 ~^Left:: Add("^{Left}")
 ~^Right:: Add("^{Right}")
 
-; забой, удаление, пробелы и т.п.
 ~BackSpace:: Add("{BackSpace}")
 ~Delete:: Add("{Delete}")
 ~Tab:: Add("{Tab}")
 ~Space:: Add("{Space}")
 ~Enter:: Add("{Enter}")
 
-; работа с буфером
 ~^sc02D:: Add("^{sc02D}") ; Control + X
 ~^sc02E:: Add("^{sc02E}") ; Control + C
 ~^sc02F:: Add("^{sc02F}") ; Control + V
@@ -217,7 +254,6 @@ return
 ~+Insert:: Add("+{Insert}")
 ~+Delete:: Add("+{Delete}")
 
-; выделение текста
 ~+Left:: Add("+{Left}")
 ~+Right:: Add("+{Right}")
 ~^+Left:: Add("^+{Left}")
@@ -225,7 +261,6 @@ return
 ~+Home:: Add("+{Home}")
 ~+End:: Add("+{End}")
 
-; цифры
 ~sc029:: Add("{sc029}") ; `
 ~+sc029:: Add("+{sc029}")
 ~sc002:: Add("{sc002}") ; 1
@@ -255,7 +290,8 @@ return
 ~sc02B:: Add("{sc02B}") ; \
 ~+sc02B:: Add("+{sc02B}")
 
-; буквы
+!+:: ChangeLang() 
+
 ~sc010:: Add("{sc010}") ; Q
 ~+sc010:: Add("+{sc010}")
 ~sc011:: Add("{sc011}") ; W

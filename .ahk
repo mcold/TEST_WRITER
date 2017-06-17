@@ -298,3 +298,123 @@ WinActivate, Сохранение
 Sleep,2000
 MouseClick,left,502,440
 MsgBox, Comments, save
+IfWinExist, АРМ Администратора ТЦПП [MHolodnyuk@vsz_woRK] - [Справочник проектов]
+WinActivate
+else
+WinActivate, АРМ Администратора ТЦПП [MHolodnyuk@vsz_woRK] - [Справочник проектов]
+Sleep,3000
+MouseClick,left,653,46
+IfWinExist, АРМ Администратора ТЦПП [MHolodnyuk@vsz_woRK] - [Справочник проектов]
+WinActivate
+else
+WinActivate, АРМ Администратора ТЦПП [MHolodnyuk@vsz_woRK] - [Справочник проектов]
+Sleep,1000
+MouseClick,left,657,122
+IfWinExist, О программе
+WinActivate
+else
+WinActivate, О программе
+Sleep,1000
+MouseClick,left,95,229
+IfWinExist, Система ЭКБ [Admin@EKB]
+WinActivate
+else
+WinActivate, Система ЭКБ [Admin@EKB]
+Sleep,2000
+MouseClick,left,256,72
+IfWinExist, Безымянный — Блокнот
+WinActivate
+else
+WinActivate, Безымянный — Блокнот
+Sleep,3000
+MouseClick,left,179,112
+Send {sc021}{BackSpace}{sc02C}{Space}{sc024}{sc02D}{sc014}{sc015}{sc032}{Space}{sc01A}{sc024}{sc02D}{sc012}{Space}{sc026}{sc024}{sc02F}{sc024}{sc010}{Enter}{sc020}{sc024}{sc031}{Space}+{sc002}+{sc002}+{sc002}
+IfWinExist, Безымянный — Блокнот
+WinActivate
+else
+WinActivate, Безымянный — Блокнот
+Sleep,2000
+MouseClick,left,247,104
+IfWinExist, Безымянный — Блокнот
+WinActivate
+else
+WinActivate, Безымянный — Блокнот
+Sleep,1000
+MouseClick,left,232,37
+IfWinExist, Безымянный — Блокнот
+WinActivate
+else
+WinActivate, Безымянный — Блокнот
+Sleep,2000
+MouseClick,left,264,91
+IfWinExist, Блокнот: сведения
+WinActivate
+else
+WinActivate, Блокнот: сведения
+Sleep,4000
+MouseClick,left,523,377
+Send {sc01F}{sc018}{sc032}{sc012}{Space}{sc02D}{sc031}{sc024}{sc00C}{sc031}{sc024}{Space}{sc031}{sc021}{sc02F}
+IfWinExist, Безымянный — Блокнот
+WinActivate
+else
+WinActivate, Безымянный — Блокнот
+Sleep,41000
+MouseClick,left,213,97
+Send {BackSpace}
+IfWinExist, Безымянный — Блокнот
+WinActivate
+else
+WinActivate, Безымянный — Блокнот
+Sleep,0
+MouseClick,left,15,66
+Send {sc02D}{sc031}{sc024}{sc00C}{sc031}{sc024}{Space}{sc01F}{sc018}{BackSpace}{sc01F}{sc018}{sc032}{sc012}
+IfWinExist, Безымянный — Блокнот
+WinActivate
+else
+WinActivate, Безымянный — Блокнот
+Sleep,3000
+MouseClick,left,160,126
+Send {sc023}{sc01E}{sc019}{sc019}{sc015}{Space}
+IfWinExist, Безымянный — Блокнот
+WinActivate
+else
+WinActivate, Безымянный — Блокнот
+Sleep,2000
+MouseClick,left,78,74
+Send {sc030}{sc017}{sc013}{sc014}{sc023}{sc020}{sc01E}{sc014}{BackSpace}{sc015}{Space}
+IfWinExist, Безымянный — Блокнот
+WinActivate
+else
+WinActivate, Безымянный — Блокнот
+Sleep,1000
+MouseClick,left,177,68
+Send {sc024}{sc02D}{sc02D}{sc014}{sc015}{sc032}{Space}
+IfWinExist, Безымянный — Блокнот
+WinActivate
+else
+WinActivate, Безымянный — Блокнот
+Sleep,1000
+MouseClick,left,233,65
+Send {sc020}{sc021}{sc027}{sc015}{sc024}{Space}
+IfWinExist, Безымянный — Блокнот
+WinActivate
+else
+WinActivate, Безымянный — Блокнот
+Sleep,1000
+MouseClick,left,277,86
+Send {Delete}
+IfWinExist, Безымянный — Блокнот
+WinActivate
+else
+WinActivate, Безымянный — Блокнот
+Sleep,2000
+MouseClick,left,356,106
+SendMessage, 0x50,, 0x4190419,, A
+SendMessage, 0x50,, 0x4090409,, A
+Send {sc023}{sc016}{sc031}{sc031}{sc015}{Space}{sc031}{sc012}{sc031}{sc012}{sc031}{sc012}{sc031}{sc012}{Space}{sc01F}{sc016}{sc022}{sc01E}{sc013}{Space}{sc01F}{sc016}{sc022}{sc01E}{sc013}{Space}
+IfWinExist, Безымянный — Блокнот
+WinActivate
+else
+WinActivate, Безымянный — Блокнот
+Sleep,0
+MouseClick,left,394,116
