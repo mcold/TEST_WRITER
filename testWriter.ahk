@@ -3,6 +3,21 @@
 ; adding new movements  - time ruling is problem
 ; rewrite comments on english
 
+
+
+
+; F2 - save script with time intervals
+; F3 - save script without time intervals (interval = 1 second)
+; F5 - reload
+; F6 - write script to buffer %Clipboard%
+; F7 - execute script from buffer %Clipboard%
+; F8 - execute script
+; F9 - pause On
+; F10 - pause Off
+; F11 - exit
+; F12 - add comment
+
+
 SendMode Input
 KeysCount := 0
 Rec := 1 						; flag of writing
@@ -45,26 +60,7 @@ global Array := Object()
 	Array.Insert(Dict)
 return
 
-F8::
-for i in Array
-{
-	; Sleep, 250
-	if % Array[i].type = "button"
-	{
-		Sleep, % Array[i].delta
-		MouseClick, % Array[i].dest, % Array[i].x, % Array[i].y	
-	}
-	
-	if % Array[i].type = "text"
-	{
-		Send % Array[i].text
-	}
-	if % Array[i].type = "input"
-	{
-		MsgBox, Comments, %t%
-	}
-}
-return
+
 
 ChangeLang()
 {
@@ -135,13 +131,15 @@ InsertSymbols()
 }
 
 TimeRewrite()
-; переписываем время
+; rewrite time
 {
 	global 
 	t_prev := t_Time
 	t_Time := A_Now
 }
 
+
+;save with time intervals
 F2::
 global Rec = 0 							; not write name of file to script
 ; save script 
@@ -158,14 +156,14 @@ for i in Array
 		yy := % Array[i].y
 		tt := % Array[i].title
 		
-		; запись активации окна
+
 		FileAppend, IfWinExist`, %tt%`n, %SelectedFile%`.ahk
 		FileAppend, WinActivate`n, %SelectedFile%`.ahk
 		FileAppend, else`n, %SelectedFile%`.ahk
 		FileAppend, WinActivate`, %tt%`n, %SelectedFile%`.ahk
 		;FileAppend, return`n, %SelectedFile%`.ahk
 		
-		; запись действий
+
 		FileAppend, Sleep`,%d%`n, %SelectedFile%`.ahk
 		FileAppend, MouseClick`,%dest%`,%xx%`,%yy%`n, %SelectedFile%`.ahk
 		 	
@@ -179,7 +177,68 @@ for i in Array
 	if % Array[i].type = "input"
 	{
 		t := % Array[i].text
-		FileAppend, MsgBox`, Comments`, %t%`n, %SelectedFile%`.ahk
+		FileAppend, MsgBox`, %t%`n, %SelectedFile%`.ahk
+	}
+	if % Array[i].type = "lang"
+	{
+		if % Array[i].to_lang = "eng"
+		{
+			
+		FileAppend, SendMessage`, 0x50`,`, 0x4090409`,`, A`n, %SelectedFile%`.ahk ; english 
+		}
+
+		if % Array[i].to_lang = "ru"
+		{
+			
+		FileAppend, SendMessage`, 0x50`,`, 0x4190419`,`, A`n, %SelectedFile%`.ahk ; russian 
+		}
+	}
+
+}
+global Rec = 1
+return
+
+
+; save without time intervals
+; time intervals = 1 second
+F3::
+global Rec = 0 							; not write name of file to script
+; save script 
+FileSelectFile, SelectedFile, 8, ,Open file, Texture files(*.ahk) 					; choose file for create or exchange 
+FileAppend, SendMessage`, 0x50`,`, 0x4090409`,`, A`n, %SelectedFile%`.ahk 				; overtune to english by default 
+
+for i in Array
+{
+	if % Array[i].type = "button"
+	{
+		d := % Array[i].delta
+		dest := % Array[i].dest
+		xx := % Array[i].x
+		yy := % Array[i].y
+		tt := % Array[i].title
+		
+		FileAppend, IfWinExist`, %tt%`n, %SelectedFile%`.ahk
+		FileAppend, WinActivate`n, %SelectedFile%`.ahk
+		FileAppend, else`n, %SelectedFile%`.ahk
+		FileAppend, WinActivate`, %tt%`n, %SelectedFile%`.ahk
+		
+		FileAppend, Sleep`,1000`n, %SelectedFile%`.ahk
+		FileAppend, MouseClick`,%dest%`,%xx%`,%yy%`n, %SelectedFile%`.ahk
+		 	
+	}
+	
+	if % Array[i].type = "text"
+	{
+		t := % Array[i].text
+		FileAppend, Send %t%`n, %SelectedFile%`.ahk
+	}
+	if % Array[i].type = "input"
+	{
+		t := % Array[i].text
+		if not t = ""											; test if comment was empty
+		{
+			FileAppend, MsgBox`, Comments`, %t%`n, %SelectedFile%`.ahk
+		}
 	}
 	if % Array[i].type = "lang"
 	{
@@ -202,6 +261,98 @@ return
 
 
 F5:: Reload
+
+F6::
+global Rec = 0 	; not write name of file to script
+
+
+Clipboard =     ; Clear buffer
+test =          ; var to write
+; save script 
+;FileSelectFile, SelectedFile, 8, ,Open file, Texture files(*.ahk) 					; choose file for create or exchange 
+;FileAppend, SendMessage`, 0x50`,`, 0x4090409`,`, A`n, %SelectedFile%`.ahk 				; overtune to english by default 
+test = %test%SendMessage`, 0x50`,`, 0x4090409`,`, A`n ; english
+for i in Array
+{
+	if % Array[i].type = "button"
+	{
+		d := % Array[i].delta
+		dest := % Array[i].dest
+		xx := % Array[i].x
+		yy := % Array[i].y
+		tt := % Array[i].title
+		
+
+		test = %test%IfWinExist`, %tt%`n
+		test = %test%WinActivate`n
+		test = %test%else`n
+		test = %test% WinActivate`, %tt%`n
+		
+		test = %test%Sleep`,1000`n
+		test = %test%MouseClick`,%dest%`,%xx%`,%yy%`n
+		 	
+	}
+	
+	if % Array[i].type = "text"
+	{
+		t := % Array[i].text
+		test = %test%Send %t%`n
+	}
+	if % Array[i].type = "input"
+	{
+		t := % Array[i].text
+		test = %test%MsgBox`, %t%`n
+	}
+	if % Array[i].type = "lang"
+	{
+		if % Array[i].to_lang = "eng"
+		{
+			
+		test = %test%SendMessage`, 0x50`,`, 0x4090409`,`, A`n ; english 
+		}
+
+		if % Array[i].to_lang = "ru"
+		{
+			
+		test = %test%SendMessage`, 0x50`,`, 0x4190419`,`, A`n ; russian 
+		}
+	}
+
+}
+Clipboard = %test%                  ; write var to buffer
+global Rec = 1
+return
+
+
+; execute script from buffer %Clipboard%
+F7::
+FileAppend, %Clipboard%`n, %A_Temp%/test.ahk
+FileAppend, FileDelete`, %A_Temp%/test.ahk, %A_Temp%/test.ahk
+Run, %A_Temp%/test.ahk
+return
+
+
+F8::
+for i in Array
+{
+	; Sleep, 250
+	if % Array[i].type = "button"
+	{
+		Sleep, % Array[i].delta
+		MouseClick, % Array[i].dest, % Array[i].x, % Array[i].y	
+	}
+	
+	if % Array[i].type = "text"
+	{
+		Send % Array[i].text
+	}
+	if % Array[i].type = "input"
+	{
+		MsgBox, Comments, %t%
+	}
+}
+return
+
 F9:: 
 Pause, On
 Rec := 0 ; flag for writing 
@@ -215,7 +366,11 @@ return
 
 F11:: ExitApp
 
+
+; input comments
 F12::
+SendMessage, 0x50,, 0x4190419,, A ; change to language - russian 
+
 global Rec := 0
 InputBox, inputtext, Comments
 Dict := {type : "input",  text : inputtext}
@@ -290,7 +445,6 @@ return
 ~sc02B:: Add("{sc02B}") ; \
 ~+sc02B:: Add("+{sc02B}")
 
-!+:: ChangeLang() 
 
 ~sc010:: Add("{sc010}") ; Q
 ~+sc010:: Add("+{sc010}")
