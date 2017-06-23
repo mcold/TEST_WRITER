@@ -1,9 +1,5 @@
 ; TODO:
-; comments
-; adding new movements  - time ruling is problem
-; rewrite comments on english
-
-
+; exchange language - debug
 
 
 ; F2 - save script with time intervals
