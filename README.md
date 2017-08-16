@@ -22,6 +22,6 @@ Script executes by hotkeys:
  
  F12 - add comment
  
- Program write users movements which had been done with pressed Ctrl
+ Program writes users movements which had been done with pressed Ctrl
  Writing symbols done automatically
  Reload is used for clear buffer of done movements
